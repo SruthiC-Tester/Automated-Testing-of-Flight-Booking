@@ -2,6 +2,7 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver import Keys, ActionChains
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
@@ -88,3 +89,59 @@ class TestExpedia:
                 break
 
         assert found, "❌ Kozhikode option not found."
+
+        # Step 4: Select Travel Dates (Jun 28 - Aug 21, 2025)
+        wait.until(EC.element_to_be_clickable((By.XPATH, '//button[contains(@aria-label, "Dates")]'))).click()
+
+        # Select departure date: June 28, 2025
+        wait.until(EC.element_to_be_clickable((
+            By.CSS_SELECTOR,
+            "div.uitk-month-double-left tr:nth-of-type(4) > td:nth-of-type(7) > div"
+        ))).click()
+        time.sleep(1)
+
+        # Next month for return date
+        wait.until(EC.element_to_be_clickable((
+            By.CSS_SELECTOR,
+            "div.uitk-cal-controls-button-next > button"
+        ))).click()
+        time.sleep(2)
+
+        # Select return date: August 21, 2025
+        wait.until(EC.element_to_be_clickable((
+            By.CSS_SELECTOR,
+            "div.uitk-month-double-right tr:nth-of-type(4) > td:nth-of-type(5) div.uitk-date-number"
+        ))).click()
+        time.sleep(1)
+
+        # Confirm dates
+        wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "footer button"))).click()
+        time.sleep(1)
+
+        # Step 5: Set Travelers (1 adult + 1 child, age 5)
+        wait.until(EC.element_to_be_clickable((
+            By.CSS_SELECTOR,
+            "div:nth-of-type(3) div.uitk-field > button"
+        ))).click()
+        time.sleep(1)
+
+        # Increase child count
+        wait.until(EC.element_to_be_clickable((
+            By.CSS_SELECTOR,
+            "section > div:nth-of-type(2) button:nth-of-type(2) svg"
+        ))).click()
+        time.sleep(1)
+
+        # Set child age to 5
+        age_dropdown_element = wait.until(EC.element_to_be_clickable((
+            By.ID,
+            "age-traveler_selector_children_age_selector-0"
+        )))
+        Select(age_dropdown_element).select_by_visible_text("5")
+        time.sleep(1)
+
+        # Done with traveler selection
+        wait.until(EC.element_to_be_clickable((By.ID, "travelers_selector_done_button"))).click()
+        time.sleep(2)
+
+        print("✅ Test case executed successfully.")
